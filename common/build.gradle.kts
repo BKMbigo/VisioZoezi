@@ -107,7 +107,10 @@ kotlin {
                 api(Desktop.deepLearningTensorflowEngine)
                 api(Desktop.deepLearningTensorflowModelZoo)
 
-                api(Desktop.kotlinDlTensorflow)
+                api(Desktop.deepLearning4JCore)
+                api(Desktop.deepLearning4JModelImport)
+
+                //api(Desktop.kotlinDlTensorflow)
             }
         }
         val desktopTest by getting

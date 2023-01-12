@@ -1,5 +1,6 @@
 package com.github.bkmbigo.visiozoezi.training
 
+import io.jhdf.HdfFile
 import org.jetbrains.kotlinx.dl.api.core.SavingFormat
 import org.jetbrains.kotlinx.dl.api.core.Sequential
 import org.jetbrains.kotlinx.dl.api.core.WritingMode
@@ -9,6 +10,7 @@ import org.jetbrains.kotlinx.dl.api.core.layer.core.Input
 import org.jetbrains.kotlinx.dl.api.core.loss.Losses
 import org.jetbrains.kotlinx.dl.api.core.metric.Metrics
 import org.jetbrains.kotlinx.dl.api.core.optimizer.Adam
+import org.jetbrains.kotlinx.dl.api.inference.keras.loadWeights
 import org.jetbrains.kotlinx.dl.api.summary.printSummary
 import java.io.File
 
@@ -40,7 +42,6 @@ fun buildAndTrainModel1() {
             File("training/src/main/resources/models/push_up_pose_estimation_model/"),
             writingMode = WritingMode.OVERRIDE
         )
-
         // Copy the saved model to the appropriate framework for detection
     }
 }

@@ -37,6 +37,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.github.bkmbigo.visiozoezi.common.domain.models.Exercise
 import com.github.bkmbigo.visiozoezi.common.domain.models.ExerciseStat
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.StatsRepository
+import com.github.bkmbigo.visiozoezi.common.ml.classifier.PoseClassificationResult
 import com.github.bkmbigo.visiozoezi.common.ml.classifier.models.PoseClassificationModel
 import com.github.bkmbigo.visiozoezi.common.presentation.components.camera.CameraCounter
 import com.github.bkmbigo.visiozoezi.common.presentation.components.camera.CameraPanel
@@ -71,6 +72,9 @@ class ExerciseScreen(
         val exerciseStat = remember { mutableStateOf<ExerciseStat?>(null) }
 
         val showEnablePoseDetectionCard = remember { mutableStateOf(startPoseDetectionOnLaunch) }
+
+        val classificationResultState =
+            remember { mutableStateOf<PoseClassificationResult>(PoseClassificationResult.NoResult) }
 
         val screenState = remember {
             mutableStateOf(
@@ -290,6 +294,7 @@ class ExerciseScreen(
                     when (screenState.value) {
                         HomeScreenState.RepetitiveExerciseState -> {
                             CameraPanel(
+                                classificationResultsState = classificationResultState,
                                 modifier = Modifier.weight(0.5f, false)
                             )
                             CameraCounter(

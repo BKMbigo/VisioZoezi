@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,7 +62,10 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-actual fun CameraPanel(modifier: Modifier) {
+actual fun CameraPanel(
+    classificationResultsState: MutableState<PoseClassificationResult>,
+    modifier: Modifier
+) {
     val lifeCycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
@@ -80,7 +84,6 @@ actual fun CameraPanel(modifier: Modifier) {
         remember { PoseClassifier.Builder(context).build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL) }
 
     val detectionResults = remember { mutableStateOf<AnalysisResult>(AnalysisResult.NoResult) }
-    val classificationResults = remember { mutableStateOf<PoseClassificationResult>(PoseClassificationResult.NoResult) }
 
     LaunchedEffect(detectionResults.value){
         withContext(Dispatchers.IO){
@@ -88,7 +91,7 @@ actual fun CameraPanel(modifier: Modifier) {
                 poseClassifier.analyze(
                     (detectionResults.value as AnalysisResult.WithResult).poseResult,
                     onAnalysisComplete = { classificationResult ->
-                        classificationResults.value = classificationResult
+                        classificationResultsState.value = classificationResult
                     }
                 )
             }

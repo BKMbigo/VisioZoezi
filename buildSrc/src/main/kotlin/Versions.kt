@@ -21,6 +21,7 @@ object Versions {
     // Desktop Dependencies
     const val webcamCapture = "0.3.12"
     const val deepLearningJava = "0.20.0"
+    const val deepLearning4J = "1.0.0-M2.1"
     const val composeJb = "1.2.2"
 
     // Android Dependencies

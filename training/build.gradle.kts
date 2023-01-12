@@ -13,4 +13,7 @@ repositories {
 dependencies {
     implementation(Training.kotlinDlTensorflow)
     implementation(Training.kotlinDlDataset)
+
+    api(Desktop.deepLearning4JCore)
+    api(Desktop.deepLearning4JModelImport)
 }
