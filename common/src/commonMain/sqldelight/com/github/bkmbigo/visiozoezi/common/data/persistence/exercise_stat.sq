@@ -1,0 +1,30 @@
+CREATE TABLE exercise_stat(
+    id INTEGER PRIMARY KEY NOT NULL,
+    exercise_id INTEGER NOT NULL,
+    time INTEGER NOT NULL,
+    is_timed INTEGER AS Boolean DEFAULT 0 NOT NULL,
+    interval INTEGER NOT NULL,
+    repetitions INTEGER AS Int NOT NULL
+);
+
+get:
+SELECT * FROM exercise_stat WHERE id = :id LIMIT 1;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+selectAll:
+SELECT * FROM exercise_stat;
+
+insertTimedStat:
+INSERT OR REPLACE INTO exercise_stat VALUES (:id, :exercise_id, :time, 1, :interval, 0);
+insertRepetitiveStat:
+INSERT OR REPLACE INTO exercise_stat VALUES (:id, :exercise_id, :time, 0, 0, :repetitions);
+
+updateTimedStat:
+UPDATE exercise_stat SET interval = :interval WHERE id = :id;
+updateRepetitiveStat:
+UPDATE exercise_stat SET repetitions = :repetitions WHERE id = :id;
+
+deleteAll:
+DELETE FROM exercise_stat;

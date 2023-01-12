@@ -1,0 +1,16 @@
+CREATE TABLE target_muscle (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM target_muscle;
+
+get:
+SELECT * FROM target_muscle WHERE id = :id LIMIT 1;
+
+insert:
+INSERT OR REPLACE INTO target_muscle VALUES ?;
+
+deleteAll:
+DELETE FROM target_muscle;

@@ -1,0 +1,28 @@
+CREATE TABLE exercise(
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    gif_url TEXT NOT NULL,
+    equipment_id INTEGER NOT NULL,
+    body_part_id INTEGER NOT NULL,
+    target_muscle_id INTEGER NOT NULL
+);
+
+CREATE INDEX exercise_name ON exercise(name);
+
+get:
+SELECT * FROM exercise WHERE id = :id LIMIT 1;
+
+selectAll:
+SELECT * FROM exercise;
+
+searchByName:
+SELECT * FROM exercise WHERE name LIKE ('%' || :name) OR name LIKE(:name || '%');
+
+insert:
+INSERT OR REPLACE INTO exercise VALUES ?;
+
+delete:
+DELETE FROM exercise WHERE id = :id;
+
+
+

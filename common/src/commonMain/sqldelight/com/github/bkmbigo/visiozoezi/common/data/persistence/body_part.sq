@@ -1,0 +1,16 @@
+CREATE TABLE body_part(
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM body_part;
+
+get:
+SELECT * FROM body_part WHERE id = :id LIMIT 1;
+
+insert:
+INSERT OR REPLACE INTO body_part VALUES ?;
+
+deleteAll:
+DELETE FROM body_part;

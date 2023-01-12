@@ -1,0 +1,16 @@
+CREATE TABLE equipment(
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM equipment;
+
+get:
+SELECT * FROM equipment WHERE id = :id LIMIT 1;
+
+insert:
+INSERT OR REPLACE INTO equipment VALUES ?;
+
+deleteAll:
+DELETE FROM equipment;
