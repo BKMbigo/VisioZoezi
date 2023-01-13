@@ -24,6 +24,7 @@ import com.github.bkmbigo.visiozoezi.common.ml.pose.ImageAnalyzer
 import com.github.bkmbigo.visiozoezi.common.ml.pose.models.AnalysisResult
 import com.github.sarxos.webcam.Webcam
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -45,46 +46,54 @@ actual fun CameraPanel(
         }
     }
 
-//    LaunchedEffect(Unit) {
-//        withContext(Dispatchers.IO) {
-//            poseClassifier.value = PoseClassifier.Builder()
-//                .build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL)
-//        }
-//    }
-//
-//    LaunchedEffect(detectionResultState.value) {
-//        if (detectionResultState.value is AnalysisResult.WithResult) {
-//            if (poseClassifier.value != null) {
-//                withContext(Dispatchers.IO) {
-//                    poseClassifier.value!!.analyze(
-//                        poseResult = (detectionResultState.value as AnalysisResult.WithResult).poseResult,
-//                        onAnalysisComplete = { classificationResult ->
-//                            if (classificationResult is PoseClassificationResult.WithResult) {
-//                                classificationResultsState.value =
-//                                    PoseClassificationResult.WithResult(
-//                                        classificationResult.data,
-//                                        classificationResult.processTime
-//                                    )
-//                            }
-//                        }
-//
-//                    )
-//                }
-//            }
-//        }
-//    }
+//    /**
+//     *
+//     *
+//     */
+////    LaunchedEffect(Unit) {
+////        withContext(Dispatchers.IO) {
+////            poseClassifier.value = PoseClassifier.Builder()
+////                .build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL)
+////        }
+////    }
+////
+////    LaunchedEffect(detectionResultState.value) {
+////        if (detectionResultState.value is AnalysisResult.WithResult) {
+////            if (poseClassifier.value != null) {
+////                withContext(Dispatchers.IO) {
+////                    poseClassifier.value!!.analyze(
+////                        poseResult = (detectionResultState.value as AnalysisResult.WithResult).poseResult,
+////                        onAnalysisComplete = { classificationResult ->
+////                            if (classificationResult is PoseClassificationResult.WithResult) {
+////                                classificationResultsState.value =
+////                                    PoseClassificationResult.WithResult(
+////                                        classificationResult.data,
+////                                        classificationResult.processTime
+////                                    )
+////                            }
+////                        }
+////
+////                    )
+////                }
+////            }
+////        }
+////    }
 
     LaunchedEffect(camera.value, imageAnalyzer) {
-        if (camera.value != null) {
-            while (camera.value!!.isOpen) {
-                val image = camera.value!!.image
-                if (imageAnalyzer.value != null) {
-                    imageAnalyzer.value!!.analyze(
-                        image = CameraImage.Companion.Builder(image).build(),
-                        uiUpdateCallback = { analysisResult ->
-                            detectionResultState.value = analysisResult
-                        }, true
-                    )
+        launch(Dispatchers.IO) {
+            if (camera.value != null) {
+                while (camera.value!!.isOpen) {
+                    val image = camera.value!!.image
+                    if (image != null) {
+                        if (imageAnalyzer.value != null) {
+                            imageAnalyzer.value!!.analyze(
+                                image = CameraImage.Companion.Builder(image).build(),
+                                uiUpdateCallback = { analysisResult ->
+                                    detectionResultState.value = analysisResult
+                                }, true
+                            )
+                        }
+                    }
                 }
             }
         }

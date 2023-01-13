@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import com.github.sarxos.webcam.Webcam
 import com.github.sarxos.webcam.WebcamPanel
+import java.awt.BorderLayout
 import javax.swing.JPanel
 
 @Composable
@@ -15,11 +16,11 @@ fun CameraPreview(
     modifier: Modifier = Modifier
 ) {
     SwingPanel(
-        background = MaterialTheme.colorScheme.background,
         modifier = modifier,
         factory = {
             JPanel().apply {
-                add(WebcamPanel(camera.value))
+                this.layout = BorderLayout()
+                add(WebcamPanel(camera.value!!))
             }
         }
     )

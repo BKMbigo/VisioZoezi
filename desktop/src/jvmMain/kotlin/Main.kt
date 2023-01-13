@@ -1,11 +1,6 @@
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.transitions.SlideTransition
 import com.github.bkmbigo.visiozoezi.common.App
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.DatabaseDriverFactory
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.createDatabase
@@ -31,18 +26,15 @@ val exerciseRepository = ExerciseRepositoryImpl(
 
 val statsRepository = StatsRepositoryImpl(database)
 
-@OptIn(ExperimentalAnimationApi::class)
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "VisioZoezi",
+        title = "VisioZoezi"
     ) {
         VisioZoeziTheme {
             Navigator(
                 HomeScreen(exerciseRepository, statsRepository)
-            ){
-                SlideTransition(it)
-            }
+            )
         }
     }
 }
