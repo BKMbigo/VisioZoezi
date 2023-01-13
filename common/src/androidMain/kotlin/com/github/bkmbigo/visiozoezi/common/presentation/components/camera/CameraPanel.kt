@@ -63,8 +63,7 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 actual fun CameraPanel(
-    classificationResultsState: MutableState<PoseClassificationResult>,
-    modifier: Modifier
+    classificationResultsState: MutableState<PoseClassificationResult>, modifier: Modifier
 ) {
     val lifeCycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -78,28 +77,26 @@ actual fun CameraPanel(
     val flashLightState = remember { mutableStateOf(false) }
     val toggleFlashlightState = remember { mutableStateOf(false) }
 
-    val imageAnalyzer =
-        remember { ImageAnalyzer.Companion.Builder(context).build() }
-    val poseClassifier =
-        remember { PoseClassifier.Builder(context).build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL) }
+    val imageAnalyzer = remember { ImageAnalyzer.Companion.Builder(context).build() }
+    val poseClassifier = remember {
+        PoseClassifier.Builder(context)
+            .build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL)
+    }
 
     val detectionResults = remember { mutableStateOf<AnalysisResult>(AnalysisResult.NoResult) }
 
-    LaunchedEffect(detectionResults.value){
-        withContext(Dispatchers.IO){
-            if(detectionResults.value is AnalysisResult.WithResult) {
-                poseClassifier.analyze(
-                    (detectionResults.value as AnalysisResult.WithResult).poseResult,
+    LaunchedEffect(detectionResults.value) {
+        withContext(Dispatchers.IO) {
+            if (detectionResults.value is AnalysisResult.WithResult) {
+                poseClassifier.analyze((detectionResults.value as AnalysisResult.WithResult).poseResult,
                     onAnalysisComplete = { classificationResult ->
                         classificationResultsState.value = classificationResult
-                    }
-                )
+                    })
             }
         }
     }
 
     CheckCameraPermission(cameraPermissionState) {
-
 
         BoxWithConstraints(modifier = modifier) {
 
@@ -117,7 +114,6 @@ actual fun CameraPanel(
                 modifier = Modifier.fillMaxSize(),
             )
 
-
             DetectionPanel(
                 resultsState = detectionResults,
                 cameraSelector = cameraSelector,
@@ -133,31 +129,24 @@ actual fun CameraPanel(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FilledIconButton(
-                    onClick = {
-                        cameraSelector.value =
-                            if (cameraSelector.value == CameraSelector.DEFAULT_BACK_CAMERA)
-                                CameraSelector.DEFAULT_FRONT_CAMERA
-                            else
-                                CameraSelector.DEFAULT_BACK_CAMERA
-                    }
-                ) {
+                FilledIconButton(onClick = {
+                    cameraSelector.value =
+                        if (cameraSelector.value == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
+                        else CameraSelector.DEFAULT_BACK_CAMERA
+                }) {
                     Icon(
-                        imageVector = Icons.Filled.SwitchCamera,
-                        contentDescription = null
+                        imageVector = Icons.Filled.SwitchCamera, contentDescription = null
                     )
                 }
                 FilledIconButton(
                     onClick = {
                         camera.value?.cameraControl?.enableTorch(!toggleFlashlightState.value)
                         toggleFlashlightState.value = !toggleFlashlightState.value
-                    },
-                    enabled = flashLightState.value
+                    }, enabled = flashLightState.value
                 ) {
                     Icon(
                         imageVector = if (toggleFlashlightState.value) Icons.Filled.FlashlightOff
-                        else Icons.Filled.FlashlightOn,
-                        contentDescription = null
+                        else Icons.Filled.FlashlightOn, contentDescription = null
                     )
                 }
             }
@@ -178,67 +167,62 @@ fun CameraPreview(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    AndroidView(
-        modifier = modifier.fillMaxSize(),
-        update = { previewView ->
-            val previewUseCase = Preview.Builder().build().also {
-                it.setSurfaceProvider(previewView.surfaceProvider)
-            }
+    AndroidView(modifier = modifier.fillMaxSize(), update = { previewView ->
+        val previewUseCase = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
 
-            val analysisUseCase = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                .build()
-                .apply {
-                    setAnalyzer(context.executor) { image ->
-                        imageAnalyzer.analyze(
-                            image = CameraImage.Companion.Builder(image).build(),
-                            uiUpdateCallback = { analysisResult ->
-                                onResultsReady(analysisResult)
-                                image.close()
-                            },
-                            isImageFlipped = cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA
-                        )
-                    }
-                }
-
-            coroutineScope.launch {
-                suspend fun setUp(
-                    context: Context,
-                    lifecycleOwner: LifecycleOwner,
-                    cameraSelector: CameraSelector,
-                    previewUseCase: UseCase,
-                    analysisUseCase: UseCase
-                ): Camera {
-                    val cameraProvider = context.getCameraProvider()
-                    try {
-                        cameraProvider.unbindAll()
-                        return cameraProvider.bindToLifecycle(
-                            lifecycleOwner, cameraSelector, previewUseCase, analysisUseCase
-                        )
-                    } catch (e: Exception) {
-                        throw e
-                    }
-                }
-
-                setUp(
-                    context, lifecycleOwner, cameraSelector, previewUseCase, analysisUseCase
-                ).also { cam ->
-                    onCameraOpened(cam)
+        val analysisUseCase = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3).build().apply {
+                setAnalyzer(context.executor) { image ->
+                    imageAnalyzer.analyze(
+                        image = CameraImage.Companion.Builder(image).build(),
+                        uiUpdateCallback = { analysisResult ->
+                            onResultsReady(analysisResult)
+                            image.close()
+                        },
+                        isImageFlipped = cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA
+                    )
                 }
             }
-        },
-        factory = { previewContext ->
-            val previewView = PreviewView(previewContext).apply {
-                this.scaleType = PreviewView.ScaleType.FILL_CENTER
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                )
+
+        coroutineScope.launch {
+            suspend fun setUp(
+                context: Context,
+                lifecycleOwner: LifecycleOwner,
+                cameraSelector: CameraSelector,
+                previewUseCase: UseCase,
+                analysisUseCase: UseCase
+            ): Camera {
+                val cameraProvider = context.getCameraProvider()
+                try {
+                    cameraProvider.unbindAll()
+                    return cameraProvider.bindToLifecycle(
+                        lifecycleOwner, cameraSelector, previewUseCase, analysisUseCase
+                    )
+                } catch (e: Exception) {
+                    throw e
+                }
             }
 
-            previewView
-        })
+            setUp(
+                context, lifecycleOwner, cameraSelector, previewUseCase, analysisUseCase
+            ).also { cam ->
+                onCameraOpened(cam)
+            }
+        }
+    }, factory = { previewContext ->
+        val previewView = PreviewView(previewContext).apply {
+            this.scaleType = PreviewView.ScaleType.FILL_CENTER
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        }
+
+        previewView
+    })
 
 }
 
@@ -285,8 +269,7 @@ fun CheckCameraPermission(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestPermission(
-    permissionState: PermissionState,
-    modifier: Modifier = Modifier
+    permissionState: PermissionState, modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
         Column(
@@ -299,9 +282,7 @@ fun RequestPermission(
                 text = "The application requires the Camera permission in order to show the Camera",
                 textAlign = TextAlign.Center,
             )
-            Button(
-                onClick = { permissionState.launchPermissionRequest() }
-            ) {
+            Button(onClick = { permissionState.launchPermissionRequest() }) {
                 Image(
                     imageVector = Icons.Filled.Camera,
                     contentDescription = null,

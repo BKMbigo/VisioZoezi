@@ -8,7 +8,7 @@ enum class PoseClassificationModel (
 
     // The model classifies a person performing any type of push up exercise --> Returns true when the person
     PUSH_UP_POSE_CLASSIFICATION_MODEL(
-        exerciseIdList = listOf(),
+        exerciseIdList = listOf(661, 662, 663, 1307, 1467, 3145),
         tfLiteModelName = "pose_classifier_push_up.tflite",
         savedModelFolderName = "push_up_keras_model"
     );

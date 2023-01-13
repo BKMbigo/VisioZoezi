@@ -11,14 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,8 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -41,10 +35,10 @@ import com.github.bkmbigo.visiozoezi.common.ml.classifier.PoseClassificationResu
 import com.github.bkmbigo.visiozoezi.common.ml.classifier.models.PoseClassificationModel
 import com.github.bkmbigo.visiozoezi.common.presentation.components.camera.CameraCounter
 import com.github.bkmbigo.visiozoezi.common.presentation.components.camera.CameraPanel
-import com.github.bkmbigo.visiozoezi.common.presentation.components.exercise.EnablePoseDetectionCard
+import com.github.bkmbigo.visiozoezi.common.presentation.components.exercise.ExerciseScreenState
 import com.github.bkmbigo.visiozoezi.common.presentation.components.exercise.ExerciseTimer
+import com.github.bkmbigo.visiozoezi.common.presentation.components.exercise.ExerciseTopCard
 import com.github.bkmbigo.visiozoezi.common.presentation.components.image.ExerciseImage
-import com.github.bkmbigo.visiozoezi.common.presentation.screens.home.HomeScreenState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -71,26 +65,32 @@ class ExerciseScreen(
 
         val exerciseStat = remember { mutableStateOf<ExerciseStat?>(null) }
 
-        val showEnablePoseDetectionCard = remember { mutableStateOf(startPoseDetectionOnLaunch) }
+        val showEnablePoseDetectionCard = remember {
+            mutableStateOf(
+                // Show if capable of poseClassification and startPoseDetectionOnLaunch is false
+                PoseClassificationModel.getPoseClassificationModels(exercise.id).isNotEmpty()
+                        && !startPoseDetectionOnLaunch
+            )
+        }
 
         val classificationResultState =
             remember { mutableStateOf<PoseClassificationResult>(PoseClassificationResult.NoResult) }
 
         val screenState = remember {
             mutableStateOf(
-                if (startPoseDetectionOnLaunch) HomeScreenState.RepetitiveExerciseState
+                if (startPoseDetectionOnLaunch) ExerciseScreenState.RepetitiveExerciseState
                 else
                     if (PoseClassificationModel.getPoseClassificationModels(exercise.id).isEmpty())
-                        HomeScreenState.TimedExerciseState(false)
+                        ExerciseScreenState.TimedExerciseState(false)
                     else
-                        HomeScreenState.TimedExerciseState(true)
+                        ExerciseScreenState.TimedExerciseState(true)
             )
         }
 
 
 
         LaunchedEffect(timedDuration.value, isTimerCounting.value) {
-            if (screenState.value is HomeScreenState.TimedExerciseState) {
+            if (screenState.value is ExerciseScreenState.TimedExerciseState) {
                 if (isTimerCounting.value) {
                     delay(1000)
                     timedDuration.value += (1).toDuration(DurationUnit.SECONDS)
@@ -117,7 +117,7 @@ class ExerciseScreen(
         DisposableEffect(exerciseStat.value) {
             onDispose {
                 when (screenState.value) {
-                    is HomeScreenState.TimedExerciseState -> {
+                    is ExerciseScreenState.TimedExerciseState -> {
                         if (timedDuration.value > Duration.ZERO) {
                             coroutineScope.launch {
                                 if (exerciseStat.value != null) {
@@ -133,7 +133,7 @@ class ExerciseScreen(
                         }
                     }
 
-                    is HomeScreenState.RepetitiveExerciseState -> {
+                    is ExerciseScreenState.RepetitiveExerciseState -> {
                         if (counterState.value > 0) {
                             coroutineScope.launch {
                                 if (exerciseStat.value != null) {
@@ -174,136 +174,40 @@ class ExerciseScreen(
                     .padding(top = paddingValues.calculateTopPadding())
                     .padding(4.dp)
             ) {
-                Row(modifier = Modifier.fillMaxWidth().weight(0.3f)) {
-                    Card(
-                        modifier = Modifier.weight(0.5f, true)
-                            .padding(4.dp)
-                            .padding(horizontal = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Column(modifier = Modifier.padding(6.dp)) {
-                            Text(
-                                text = exercise.name,
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Divider(Modifier.padding(horizontal = 4.dp))
-                            Spacer(Modifier.height(4.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Card(
-                                    colors = CardDefaults.elevatedCardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface,
-                                    ),
-                                    elevation = CardDefaults.elevatedCardElevation(
-                                        defaultElevation = 4.dp
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 4.dp)
-                                ) {
-                                    Column(modifier = Modifier.padding(6.dp)) {
-                                        Text(
-                                            text = "Equipment:",
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                        Spacer(Modifier.height(6.dp))
-                                        Text(
-                                            text = exercise.equipment.name,
-                                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                                        )
-                                    }
-                                }
-
-                                Card(
-                                    colors = CardDefaults.elevatedCardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface,
-                                    ),
-                                    elevation = CardDefaults.elevatedCardElevation(
-                                        defaultElevation = 6.dp
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 4.dp)
-                                ) {
-                                    Column(modifier = Modifier.padding(6.dp)) {
-                                        Text(
-                                            text = "Body Part:",
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                        Spacer(Modifier.height(4.dp))
-                                        Text(
-                                            text = exercise.bodyPart.name,
-                                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                                        )
-                                    }
-                                }
-
-                                Card(
-                                    colors = CardDefaults.elevatedCardColors(
-                                        containerColor = MaterialTheme.colorScheme.surface,
-                                    ),
-                                    elevation = CardDefaults.elevatedCardElevation(
-                                        defaultElevation = 6.dp
-                                    ),
-                                    modifier = Modifier.padding(horizontal = 6.dp)
-                                ) {
-                                    Column(modifier = Modifier.padding(4.dp)) {
-                                        Text(
-                                            text = "Target Muscle:",
-                                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                        Spacer(Modifier.height(4.dp))
-                                        Text(
-                                            text = exercise.targetMuscle.name,
-                                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (showEnablePoseDetectionCard.value) {
-                        EnablePoseDetectionCard(
-                            onAccept = { },
-                            onDismiss = { showEnablePoseDetectionCard.value = false },
-                            modifier = Modifier.padding(2.dp).weight(0.5f)
-                        )
-                    }
-                }
+                ExerciseTopCard(
+                    showEnablePoseDetectionCard,
+                    screenState,
+                    exercise,
+                    modifier = Modifier.fillMaxWidth().weight(0.2f, false)
+                )
                 Spacer(Modifier.height(4.dp))
                 ExerciseImage(
                     gifUrl = exercise.gifUrl,
-                    modifier = Modifier.weight(0.3f, true).align(Alignment.CenterHorizontally)
+                    modifier = Modifier.weight(0.4f, true).align(Alignment.CenterHorizontally)
                 )
 
                 Spacer(Modifier.height(4.dp))
 
                 Row(
-                    Modifier.fillMaxWidth().weight(0.4f)
+                    Modifier.fillMaxWidth().weight(0.3f)
                         .padding(4.dp)
                         .padding(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     when (screenState.value) {
-                        HomeScreenState.RepetitiveExerciseState -> {
+                        ExerciseScreenState.RepetitiveExerciseState -> {
                             CameraPanel(
                                 classificationResultsState = classificationResultState,
                                 modifier = Modifier.weight(0.5f, false)
                             )
                             CameraCounter(
                                 counterState,
-                                modifier = Modifier.weight(0.5f).fillMaxHeight()
+                                classificationResult = classificationResultState,
+                                modifier = Modifier.weight(0.5f).fillMaxHeight(),
                             )
                         }
 
-                        is HomeScreenState.TimedExerciseState -> {
+                        is ExerciseScreenState.TimedExerciseState -> {
                             ExerciseTimer(
                                 timerState = timedDuration,
                                 isTimerCounting = isTimerCounting,

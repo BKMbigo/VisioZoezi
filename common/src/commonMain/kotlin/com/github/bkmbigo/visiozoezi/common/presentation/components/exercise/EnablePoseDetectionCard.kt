@@ -1,6 +1,7 @@
 package com.github.bkmbigo.visiozoezi.common.presentation.components.exercise
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnablePoseDetectionCard(
+fun FullEnablePoseDetectionCard(
     onAccept: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -91,5 +92,57 @@ fun EnablePoseDetectionCard(
             Spacer(Modifier.height(2.dp))
         }
     }
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VerticalEnablePoseDetectionCard(
+    onAccept: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        Card(
+            modifier = Modifier.align(Alignment.Center).padding(4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().weight(0.2f, false),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { onDismiss() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = null
+                    )
+                }
+            }
+            Text(
+                text = "Enable Pose Detection?",
+                modifier = Modifier.fillMaxWidth()
+                    .weight(0.4f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().weight(0.3f, false),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(
+                    onClick = { onDismiss() }
+                ) {
+                    Text("Dismiss")
+                }
+                Button(
+                    onClick = { onAccept() }
+                ) {
+                    Text("Accept")
+                }
+            }
+        }
+    }
 }
