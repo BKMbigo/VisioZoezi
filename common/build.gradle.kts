@@ -48,6 +48,8 @@ kotlin {
                 api(Common.voyager)
                 api(Common.voyagerTransitions)
 
+                api(Common.multiplatformSettings)
+
             }
         }
         val commonTest by getting {

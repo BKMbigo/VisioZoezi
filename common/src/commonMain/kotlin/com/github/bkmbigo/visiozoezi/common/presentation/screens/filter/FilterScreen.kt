@@ -9,9 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
@@ -105,6 +104,7 @@ class FilterScreen(
                             bodyPart = bodyPartFilterState.value,
                             targetMuscle = targetMuscleFilterState.value
                         )
+                    loading.value = false
                 }
             }
         }
@@ -190,7 +190,7 @@ class FilterScreen(
                     }
                 }
                 Card(
-                    modifier = Modifier.fillMaxWidth().weight(0.3f),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.elevatedCardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
@@ -288,15 +288,21 @@ private fun EquipmentFilterRow(
     equipmentFilterState: MutableState<Equipment?>,
     modifier: Modifier = Modifier,
 ) {
-    LazyHorizontalGrid(
-        rows = GridCells.Fixed(3),
+    LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(4.dp)
     ) {
         items(equipmentList.value) { equipment ->
             FilterChip(
+                modifier = Modifier.padding(horizontal = 4.dp),
                 selected = equipment == equipmentFilterState.value,
-                onClick = { equipmentFilterState.value = equipment },
+                onClick = {
+                    if (equipmentFilterState.value != equipment) {
+                        equipmentFilterState.value = equipment
+                    } else {
+                        equipmentFilterState.value = null
+                    }
+                },
                 label = { Text(text = equipment.name) },
             )
         }
@@ -310,15 +316,22 @@ private fun BodyPartFilterRow(
     bodyPartEquipmentList: MutableState<BodyPart?>,
     modifier: Modifier = Modifier,
 ) {
-    LazyHorizontalGrid(
-        rows = GridCells.Fixed(3),
+    LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(4.dp)
     ) {
         items(bodyPartList.value) { bodyPart ->
             FilterChip(
+                modifier = Modifier.padding(horizontal = 4.dp),
                 selected = bodyPart == bodyPartEquipmentList.value,
-                onClick = { bodyPartEquipmentList.value = bodyPart },
+                onClick = {
+                    if (bodyPartEquipmentList.value != bodyPart) {
+                        bodyPartEquipmentList.value = bodyPart
+                    } else {
+                        bodyPartEquipmentList.value = null
+                    }
+
+                },
                 label = { Text(text = bodyPart.name) },
             )
         }
@@ -332,15 +345,21 @@ private fun TargetMuscleFilterRow(
     targetMuscleFilterState: MutableState<TargetMuscle?>,
     modifier: Modifier = Modifier,
 ) {
-    LazyHorizontalGrid(
-        rows = GridCells.Fixed(3),
+    LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(4.dp)
     ) {
         items(targetMuscleList.value) { targetMuscle ->
             FilterChip(
+                modifier = Modifier.padding(horizontal = 4.dp),
                 selected = targetMuscle == targetMuscleFilterState.value,
-                onClick = { targetMuscleFilterState.value = targetMuscle },
+                onClick = {
+                    if (targetMuscleFilterState.value != targetMuscle) {
+                        targetMuscleFilterState.value = targetMuscle
+                    } else {
+                        targetMuscleFilterState.value = null
+                    }
+                },
                 label = { Text(text = targetMuscle.name) },
             )
         }

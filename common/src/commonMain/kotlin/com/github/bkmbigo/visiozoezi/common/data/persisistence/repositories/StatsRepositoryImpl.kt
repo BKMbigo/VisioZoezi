@@ -59,7 +59,11 @@ class StatsRepositoryImpl(
     }
 
     override suspend fun deleteStat(exerciseStat: ExerciseStat) {
-        // NOT Implemented
+        database.exercise_statQueries.deleteStat(exerciseStat.id!!)
+    }
+
+    override suspend fun deleteAllStats() {
+        database.exercise_statQueries.deleteAll()
     }
 
     override suspend fun getAllStats(): Flow<List<ExerciseStat>> {

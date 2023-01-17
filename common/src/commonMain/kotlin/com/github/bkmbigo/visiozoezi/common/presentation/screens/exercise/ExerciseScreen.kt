@@ -58,7 +58,7 @@ class ExerciseScreen(
         val coroutineScope = rememberCoroutineScope()
 
         // State Variables
-        val timedDuration = remember { mutableStateOf<Duration>(Duration.ZERO) }
+        val timedDuration = remember { mutableStateOf(Duration.ZERO) }
         val isTimerCounting = remember { mutableStateOf(false) }
 
         val counterState = remember { mutableStateOf(0) }
@@ -94,11 +94,16 @@ class ExerciseScreen(
                 if (isTimerCounting.value) {
                     delay(1000)
                     timedDuration.value += (1).toDuration(DurationUnit.SECONDS)
-                    if ((timedDuration.value / (20).toDuration(DurationUnit.SECONDS)) == 0.0) {
+                    var timerRem =
+                        (timedDuration.value / (DEFAULT_SAVE_TIMEOUT).toDuration(DurationUnit.SECONDS)).toInt()
+                            .toDouble()
+                    timerRem =
+                        timedDuration.value.toDouble(DurationUnit.SECONDS) - (timerRem * DEFAULT_SAVE_TIMEOUT)
+                    if (timerRem == 0.0) {
                         // Save every 20 seconds
                         if (exerciseStat.value == null) {
                             // Create new stat
-                            ExerciseStat.TimedStat(
+                            exerciseStat.value = ExerciseStat.TimedStat(
                                 id = null,
                                 exerciseId = exercise.id,
                                 time = Clock.System.now(),
@@ -114,7 +119,7 @@ class ExerciseScreen(
         }
 
 
-        DisposableEffect(exerciseStat.value) {
+        DisposableEffect(exerciseStat.value, isTimerCounting.value) {
             onDispose {
                 when (screenState.value) {
                     is ExerciseScreenState.TimedExerciseState -> {
@@ -122,12 +127,29 @@ class ExerciseScreen(
                             coroutineScope.launch {
                                 if (exerciseStat.value != null) {
                                     if (exerciseStat.value?.id == null) {
-                                        val id = statsRepository.addStat(exerciseStat.value!!)
+                                        val newStat =
+                                            (exerciseStat.value!! as ExerciseStat.TimedStat).copy(
+                                                duration = timedDuration.value
+                                            )
+                                        val id = statsRepository.addStat(newStat)
                                         exerciseStat.value =
                                             (exerciseStat.value!! as ExerciseStat.TimedStat).copy(id = id)
                                     } else {
-                                        statsRepository.updateStat(exerciseStat.value!!)
+                                        val newStat =
+                                            (exerciseStat.value!! as ExerciseStat.TimedStat).copy(
+                                                duration = timedDuration.value
+                                            )
+                                        statsRepository.updateStat(newStat)
                                     }
+                                } else {
+                                    val newStat = ExerciseStat.TimedStat(
+                                        id = null,
+                                        exerciseId = exercise.id,
+                                        time = Clock.System.now(),
+                                        duration = timedDuration.value
+                                    )
+                                    exerciseStat.value = newStat
+                                    statsRepository.addStat(newStat)
                                 }
                             }
                         }
@@ -221,5 +243,9 @@ class ExerciseScreen(
         }
 
 
+    }
+
+    companion object {
+        const val DEFAULT_SAVE_TIMEOUT = 5
     }
 }

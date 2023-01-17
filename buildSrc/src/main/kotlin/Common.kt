@@ -22,4 +22,6 @@ object Common {
 
     const val voyager = "cafe.adriel.voyager:voyager-navigator:${Versions.voyager}"
     const val voyagerTransitions = "cafe.adriel.voyager:voyager-transitions:${Versions.voyager}"
+
+    const val multiplatformSettings = "com.russhwolf:multiplatform-settings-no-arg:${Versions.multiplatformSettings}"
 }

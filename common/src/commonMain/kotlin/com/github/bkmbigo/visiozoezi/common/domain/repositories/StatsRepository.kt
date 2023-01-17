@@ -10,5 +10,7 @@ interface StatsRepository {
 
     suspend fun deleteStat(exerciseStat: ExerciseStat)
 
+    suspend fun deleteAllStats()
+
     suspend fun getAllStats(): Flow<List<ExerciseStat>>
 }

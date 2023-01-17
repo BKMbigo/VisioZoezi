@@ -148,7 +148,7 @@ class HomeScreen(
                         }
                     )
                     FilledIconButton(
-                        onClick = { navigator?.push(UserScreen()) },
+                        onClick = { navigator?.push(UserScreen(statsRepository)) },
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
                         Icon(
@@ -185,7 +185,7 @@ class HomeScreen(
                         }
                     }
                 }
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(6.dp))
                 Divider(Modifier.padding(horizontal = 4.dp))
                 Spacer(Modifier.height(2.dp))
                 Row(modifier = Modifier.fillMaxWidth()) {

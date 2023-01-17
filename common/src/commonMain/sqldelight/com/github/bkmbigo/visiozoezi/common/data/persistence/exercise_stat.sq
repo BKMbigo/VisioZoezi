@@ -26,5 +26,8 @@ UPDATE exercise_stat SET interval = :interval WHERE id = :id;
 updateRepetitiveStat:
 UPDATE exercise_stat SET repetitions = :repetitions WHERE id = :id;
 
+deleteStat:
+DELETE FROM exercise_stat WHERE id = :id;
+
 deleteAll:
 DELETE FROM exercise_stat;
