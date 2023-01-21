@@ -17,7 +17,13 @@ A compose multiplatform fitness application. The application utilizes [Kotlin Mu
   - [Modules](###modules)
   - [Layers](###layers)
 - [Screenshots](##screenshots)
-- [Computer Vision](##computer-ision)
+- [Computer Vision](##computer-vision)
+
+## Prerequisites
+#### IDE
+You can either use [IntelliJ IDEA](https://www.jetbrains.com/idea/) or [Android Studio](https://developer.android.com/studio/) to develop the project.
+#### Exercise DB API
+The application utilizes [Exercise DB Api](https://rapidapi.com/justin-WFnsXH_t6/api/exercisedb/) to display list of workouts. You can obtain an API Key from [RapidAPI](https://rapidapi.com/justin-WFnsXH_t6/api/exercisedb/).
 
 ## Libraries Used
 ### Multiplatform Libraries
@@ -70,6 +76,4 @@ The application is divided into four modules:
 Camera capture is achieved using [Camera X](https://developer.android.com/training/camerax) on Android and [Webcam Capture](https://github.com/sarxos/webcam-capture) on desktop JVM's. The use of Webcam Capture, requires the use of Swing Panel, which overlays over Compose Components, thus disabling preview of pose detection results.
 
 ### Pose Estimation
-The project was aimed at utilizing computer vision techniques, particularly pose estimation and classification to assist in fitness tracking. Pose estimation utilizes [Movenet Singlepose Lightning](https://tfhub.dev/google/movenet/singlepose/lightning/4) to infer human pose from images captures from the camera. The model was implemented using [Kotlin-DL](https://github.com/Kotlin/kotlindl) and [DeepLearningJava](https://djl.ai/s) on JVM. The use of different frameworks was due to issues encountered while using one framework to instantiating models on different frameworks.
-
-#
+The project was aimed at utilizing computer vision techniques, particularly pose estimation and classification to assist in fitness tracking. Pose estimation utilizes [Movenet Singlepose Lightning](https://tfhub.dev/google/movenet/singlepose/lightning/4) to infer human pose from images captures from the camera. The model was implemented using [Kotlin-DL](https://github.com/Kotlin/kotlindl) and [DeepLearningJava](https://djl.ai/s) on JVM. The use of different frameworks was due to issues encountered while using one framework to instantiating models on different platforms.
