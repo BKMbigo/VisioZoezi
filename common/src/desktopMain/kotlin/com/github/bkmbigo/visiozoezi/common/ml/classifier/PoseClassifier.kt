@@ -45,7 +45,8 @@ actual class PoseClassifier(
         }
 
         companion object {
-            const val MODELS_PATH = "/src/desktopMain/resources/models/"
+            const val MODELS_PATH =
+                "/mnt/Programming/Projects/Programming/JavaVirtualMachine/Kotlin/PersonalProjects/KotlinMultiplatform/VisioZoezi/common/src/desktopMain/resources/models/"
         }
 
     }

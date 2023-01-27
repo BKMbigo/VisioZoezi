@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.bkmbigo.visiozoezi.common.ml.classifier.PoseClassificationResult
+import com.github.bkmbigo.visiozoezi.common.ml.classifier.PoseClassifier
 import com.github.bkmbigo.visiozoezi.common.ml.pose.ImageAnalyzer
 import com.github.bkmbigo.visiozoezi.common.ml.pose.models.AnalysisResult
 import com.github.sarxos.webcam.Webcam
@@ -36,7 +37,9 @@ actual fun CameraPanel(
     val camera = remember { mutableStateOf<Webcam?>(null) }
 
     val imageAnalyzer = remember { mutableStateOf<ImageAnalyzer?>(null) }
-    //val poseClassifier = remember { mutableStateOf<PoseClassifier?>(null) }
+    val poseClassifier = remember { mutableStateOf<PoseClassifier?>(null) }
+
+    val analysisReady = remember { mutableStateOf(true) }
 
     val detectionResultState = remember { mutableStateOf<AnalysisResult>(AnalysisResult.NoResult) }
 
@@ -46,52 +49,56 @@ actual fun CameraPanel(
         }
     }
 
-//    /**
-//     *
-//     *
-//     */
-////    LaunchedEffect(Unit) {
-////        withContext(Dispatchers.IO) {
-////            poseClassifier.value = PoseClassifier.Builder()
-////                .build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL)
-////        }
-////    }
-////
-////    LaunchedEffect(detectionResultState.value) {
-////        if (detectionResultState.value is AnalysisResult.WithResult) {
-////            if (poseClassifier.value != null) {
-////                withContext(Dispatchers.IO) {
-////                    poseClassifier.value!!.analyze(
-////                        poseResult = (detectionResultState.value as AnalysisResult.WithResult).poseResult,
-////                        onAnalysisComplete = { classificationResult ->
-////                            if (classificationResult is PoseClassificationResult.WithResult) {
-////                                classificationResultsState.value =
-////                                    PoseClassificationResult.WithResult(
-////                                        classificationResult.data,
-////                                        classificationResult.processTime
-////                                    )
-////                            }
-////                        }
-////
-////                    )
-////                }
-////            }
-////        }
-////    }
+    /**
+     *
+     *
+     */
+//    LaunchedEffect(Unit) {
+//        withContext(Dispatchers.IO) {
+//            poseClassifier.value = PoseClassifier.Builder()
+//                .build(PoseClassificationModel.PUSH_UP_POSE_CLASSIFICATION_MODEL)
+//        }
+//    }
+//
+//    LaunchedEffect(detectionResultState.value) {
+//        if (detectionResultState.value is AnalysisResult.WithResult) {
+//            if (poseClassifier.value != null) {
+//                withContext(Dispatchers.IO) {
+//                    poseClassifier.value!!.analyze(
+//                        poseResult = (detectionResultState.value as AnalysisResult.WithResult).poseResult,
+//                        onAnalysisComplete = { classificationResult ->
+//                            if (classificationResult is PoseClassificationResult.WithResult) {
+//                                classificationResultsState.value =
+//                                    PoseClassificationResult.WithResult(
+//                                        classificationResult.data,
+//                                        classificationResult.processTime
+//                                    )
+//                            }
+//                        }
+//
+//                    )
+//                }
+//            }
+//        }
+//    }
 
     LaunchedEffect(camera.value, imageAnalyzer) {
         launch(Dispatchers.IO) {
             if (camera.value != null) {
                 while (camera.value!!.isOpen) {
-                    val image = camera.value!!.image
-                    if (image != null) {
-                        if (imageAnalyzer.value != null) {
-                            imageAnalyzer.value!!.analyze(
-                                image = CameraImage.Companion.Builder(image).build(),
-                                uiUpdateCallback = { analysisResult ->
-                                    detectionResultState.value = analysisResult
-                                }, true
-                            )
+                    if (analysisReady.value) {
+                        val image = camera.value!!.image
+                        if (image != null) {
+                            if (imageAnalyzer.value != null) {
+                                analysisReady.value = false
+                                imageAnalyzer.value!!.analyze(
+                                    image = CameraImage.Companion.Builder(image).build(),
+                                    uiUpdateCallback = { analysisResult ->
+                                        detectionResultState.value = analysisResult
+                                        analysisReady.value = true
+                                    }, true
+                                )
+                            }
                         }
                     }
                 }

@@ -55,7 +55,7 @@ fun List<ExerciseStat>.getMonthlyStats(
 
 fun List<ExerciseStat>.associateByDate(): Map<LocalDate, List<ExerciseStat>> {
     val dates = this.map { it.time.toLocalDateTime(TimeZone.currentSystemDefault()).date }
-    val dateSet = dates.toSet()
+    val dateSet = dates.distinct()
     return dateSet.associateWith { date ->
         this.filter { it.time.toLocalDateTime(TimeZone.currentSystemDefault()).date == date }
     }

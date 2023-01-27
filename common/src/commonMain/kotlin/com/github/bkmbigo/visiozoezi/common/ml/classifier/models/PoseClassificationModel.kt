@@ -17,8 +17,7 @@ enum class PoseClassificationModel (
         val poseClassifiedExerciseList = PoseClassificationModel.values()
             .map { it.exerciseIdList }
             .flatten()
-            .toSet()
-            .toList()
+            .distinct()
 
         val poseClassificationMap = poseClassifiedExerciseList.associateWith { exerciseId ->
             PoseClassificationModel.values().filter { it.exerciseIdList.contains(exerciseId) }
