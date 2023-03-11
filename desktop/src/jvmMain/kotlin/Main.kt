@@ -1,4 +1,10 @@
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import cafe.adriel.voyager.navigator.Navigator
@@ -6,19 +12,21 @@ import com.github.bkmbigo.visiozoezi.common.data.persisistence.DatabaseDriverFac
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.createDatabase
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.repositories.DatabaseExerciseRepositoryImpl
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.repositories.StatsRepositoryImpl
+import com.github.bkmbigo.visiozoezi.common.data.persistence.VisioZoeziDatabase
 import com.github.bkmbigo.visiozoezi.common.data.repositories.ExerciseRepositoryImpl
-import com.github.bkmbigo.visiozoezi.common.data.repositories.NetworkExerciseRepository
 import com.github.bkmbigo.visiozoezi.common.data.settings.SettingsKeys
 import com.github.bkmbigo.visiozoezi.common.data.settings.settings
-import com.github.bkmbigo.visiozoezi.common.domain.models.BodyPart
-import com.github.bkmbigo.visiozoezi.common.domain.models.Equipment
-import com.github.bkmbigo.visiozoezi.common.domain.models.Exercise
-import com.github.bkmbigo.visiozoezi.common.domain.models.TargetMuscle
+import com.github.bkmbigo.visiozoezi.common.domain.repositories.ExerciseRepository
+import com.github.bkmbigo.visiozoezi.common.domain.repositories.StatsRepository
 import com.github.bkmbigo.visiozoezi.common.presentation.screens.home.HomeScreen
 import com.github.bkmbigo.visiozoezi.common.presentation.theme.VisioZoeziTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-
-val database = createDatabase(DatabaseDriverFactory())
+/**
+ * Fakes the network call
+ */
 
 //val fakeNetworkExerciseRepository = object : NetworkExerciseRepository {
 //    override suspend fun getAllExercises(
@@ -72,14 +80,25 @@ val database = createDatabase(DatabaseDriverFactory())
 //    }
 //}
 
-val exerciseRepository = ExerciseRepositoryImpl(
-    databaseExerciseRepository = DatabaseExerciseRepositoryImpl(database),
-    //networkExerciseRepository = fakeNetworkExerciseRepository
-)
-
-val statsRepository = StatsRepositoryImpl(database)
 
 fun main() = application {
+    val customScope = CoroutineScope(Job())
+
+    var database: VisioZoeziDatabase? = null
+    var exerciseRepository: ExerciseRepository? = null
+    var statsRepository: StatsRepository? = null
+
+    customScope.launch {
+        val db = createDatabase(DatabaseDriverFactory())
+        database = db
+        exerciseRepository = ExerciseRepositoryImpl(
+            databaseExerciseRepository = DatabaseExerciseRepositoryImpl(db),
+            //networkExerciseRepository = fakeNetworkExerciseRepository
+        )
+        statsRepository = StatsRepositoryImpl(db)
+    }
+
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "VisioZoezi"
@@ -91,9 +110,20 @@ fun main() = application {
                 )
             ) true else isSystemInDarkTheme()
         ) {
-            Navigator(
-                HomeScreen(exerciseRepository, statsRepository)
-            )
+            exerciseRepository?.let { exRep ->
+                statsRepository?.let { statRep ->
+                    Navigator(
+                        HomeScreen(exRep, statRep)
+                    )
+                }
+            } ?: Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Waiting for Database Creation")
+            }
+
         }
     }
 }

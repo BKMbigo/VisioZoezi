@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.bkmbigo.visiozoezi.common.domain.models.Exercise
 import com.github.bkmbigo.visiozoezi.common.presentation.components.image.ExerciseImage
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +45,7 @@ fun ExerciseItem(
                 text = exercise.name.split(" ").joinToString(" ") {
                     it.replaceFirstChar { word ->
                         if (word.isLowerCase())
-                            word.titlecase(Locale.getDefault())
+                            word.titlecase()
                         else
                             word.toString()
                     }

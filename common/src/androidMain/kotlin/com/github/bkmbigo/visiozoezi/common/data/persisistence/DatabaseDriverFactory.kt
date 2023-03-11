@@ -8,7 +8,7 @@ import com.squareup.sqldelight.db.SqlDriver
 actual class DatabaseDriverFactory(
     private val context: Context
 ) {
-    actual fun createDriver(): SqlDriver {
+    actual suspend fun createDriver(schema: SqlDriver.Schema): SqlDriver {
         return AndroidSqliteDriver(VisioZoeziDatabase.Schema, context, "VisioZoezi.db")
     }
 }

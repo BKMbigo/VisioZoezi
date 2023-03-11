@@ -4,10 +4,10 @@ import com.github.bkmbigo.visiozoezi.common.data.persistence.VisioZoeziDatabase
 import com.squareup.sqldelight.db.SqlDriver
 
 expect class DatabaseDriverFactory {
-    fun createDriver(): SqlDriver
+    suspend fun createDriver(schema: SqlDriver.Schema): SqlDriver
 }
 
-fun createDatabase(driverFactory: DatabaseDriverFactory): VisioZoeziDatabase{
-    val driver = driverFactory.createDriver()
+suspend fun createDatabase(driverFactory: DatabaseDriverFactory): VisioZoeziDatabase{
+    val driver = driverFactory.createDriver(VisioZoeziDatabase.Schema)
     return VisioZoeziDatabase(driver)
 }

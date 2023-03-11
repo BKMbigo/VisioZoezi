@@ -7,6 +7,7 @@ import com.github.bkmbigo.visiozoezi.common.domain.models.Exercise
 import com.github.bkmbigo.visiozoezi.common.domain.models.TargetMuscle
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.ExerciseRepository
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.utils.filterList
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -17,7 +18,8 @@ import kotlin.time.toDuration
 
 class ExerciseRepositoryImpl(
     private val databaseExerciseRepository: DatabaseExerciseRepository,
-    private val networkExerciseRepository: NetworkExerciseRepository = NetworkExerciseRepositoryImpl()
+    private val networkExerciseRepository: NetworkExerciseRepository = NetworkExerciseRepositoryImpl(),
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ExerciseRepository {
 
     var lastNetworkCall: Instant? = null
@@ -75,11 +77,11 @@ class ExerciseRepositoryImpl(
 
     private suspend fun refreshDatabase() {
         val equipmentList =
-            withContext(Dispatchers.IO) { networkExerciseRepository.getAllEquipment() }
+            withContext(ioDispatcher) { networkExerciseRepository.getAllEquipment() }
         val bodyPartList =
-            withContext(Dispatchers.IO) { networkExerciseRepository.getAllBodyParts() }
+            withContext(ioDispatcher) { networkExerciseRepository.getAllBodyParts() }
         val targetMuscleList =
-            withContext(Dispatchers.IO) { networkExerciseRepository.getAllTargetMuscles() }
+            withContext(ioDispatcher) { networkExerciseRepository.getAllTargetMuscles() }
 
         lastNetworkCall = Clock.System.now()
 
@@ -88,7 +90,7 @@ class ExerciseRepositoryImpl(
         databaseExerciseRepository.insertTargetMuscle(targetMuscleList)
 
         val exerciseList =
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 networkExerciseRepository.getAllExercises(
                     equipmentList = equipmentList,
                     bodyPartList = bodyPartList,

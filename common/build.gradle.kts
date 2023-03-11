@@ -13,6 +13,10 @@ version = "1.0-SNAPSHOT"
 
 kotlin {
     android()
+    js(IR) {
+        browser()
+        binaries.executable()
+    }
     jvm("desktop") {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
@@ -27,10 +31,7 @@ kotlin {
                 api(compose.material)
                 api(compose.material3)
                 api(compose.ui)
-                api(compose.uiTooling)
                 api(compose.animation)
-
-                api(Common.compooseAnimatedImages)
 
                 api(compose.materialIconsExtended)
 
@@ -45,9 +46,6 @@ kotlin {
                 api(Common.sqlDelight)
                 api(Common.sqlDelightCoroutine)
 
-                api(Common.voyager)
-                api(Common.voyagerTransitions)
-
                 api(Common.multiplatformSettings)
 
             }
@@ -57,7 +55,30 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        val jsMain by getting {
+            dependencies {
+                implementation(compose.web.core)
+
+                implementation(Javascript.ktorClientJS)
+
+                implementation(Javascript.sqlDelightJs)
+            }
+        }
+        val jvmMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+
+                api(compose.uiTooling)
+
+                api(Common.compooseAnimatedImages)
+
+                api(Common.voyager)
+                api(Common.voyagerTransitions)
+            }
+        }
+
         val androidMain by getting {
+            dependsOn(jvmMain)
             dependencies {
                 api("androidx.appcompat:appcompat:1.5.1")
                 api(Android.AndroidDependencies.coreKtx)
@@ -95,6 +116,7 @@ kotlin {
             }
         }
         val desktopMain by getting {
+            dependsOn(jvmMain)
             dependencies {
                 api(compose.preview)
                 api(compose.desktop.currentOs)
@@ -114,6 +136,10 @@ kotlin {
         }
         val desktopTest by getting
     }
+}
+
+compose.experimental {
+    web.application {}
 }
 
 android {

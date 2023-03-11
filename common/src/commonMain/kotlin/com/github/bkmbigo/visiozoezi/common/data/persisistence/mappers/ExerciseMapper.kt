@@ -21,9 +21,9 @@ fun ExerciseDb.toExercise(
         id = id,
         name = name,
         gifUrl = gif_url,
-        equipment = equipmentList.getOrDefault(equipment_id.toInt(), equipmentList.values.first()),
-        bodyPart = bodyPartList.getOrDefault(body_part_id.toInt(), bodyPartList.values.first()),
-        targetMuscle = targetMuscleList.getOrDefault(target_muscle_id.toInt(), targetMuscleList.values.first()),
+        equipment = equipmentList.getOrElse(equipment_id.toInt()) { equipmentList.values.first() },
+        bodyPart = bodyPartList.getOrElse(body_part_id.toInt()) { bodyPartList.values.first() },
+        targetMuscle = targetMuscleList.getOrElse(target_muscle_id.toInt()) { targetMuscleList.values.first() }
     )
 }
 
