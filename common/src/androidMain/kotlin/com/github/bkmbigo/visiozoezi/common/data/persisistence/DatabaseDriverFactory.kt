@@ -1,14 +1,12 @@
 package com.github.bkmbigo.visiozoezi.common.data.persisistence
 
 import android.content.Context
-import com.github.bkmbigo.visiozoezi.common.data.persistence.VisioZoeziDatabase
-import com.squareup.sqldelight.android.AndroidSqliteDriver
-import com.squareup.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlSchema
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
-actual class DatabaseDriverFactory(
-    private val context: Context
-) {
-    actual suspend fun createDriver(schema: SqlDriver.Schema): SqlDriver {
-        return AndroidSqliteDriver(VisioZoeziDatabase.Schema, context, "VisioZoezi.db")
+actual class DatabaseDriverFactory(private val context: Context) {
+    actual suspend fun createDriver(schema: SqlSchema): SqlDriver {
+        return AndroidSqliteDriver(schema, context, "VisioZoezi.db")
     }
 }

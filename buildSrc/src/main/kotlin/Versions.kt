@@ -1,6 +1,6 @@
 object Versions {
     //Project Versions
-    const val kotlin = "1.7.20"
+    const val kotlin = "1.8.0"
     const val grade = "7.2.0"
     const val androidGradlePlugin = "2.3.0"
 
@@ -9,7 +9,7 @@ object Versions {
     const val kotlinSerialization = "1.6.10"
     const val kotlinxSerialization = "1.2.2"
     const val ktor = "2.2.2"
-    const val sqlDelight = "1.5.4"
+    const val sqlDelight = "2.0.0-alpha05"
     const val voyager = "1.0.0-rc03"
 
     const val coroutinesTest = "1.5.0"

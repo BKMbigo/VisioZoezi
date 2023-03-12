@@ -15,5 +15,5 @@ object Desktop {
 
     const val kotlinDlTensorflow = "org.jetbrains.kotlinx:kotlin-deeplearning-tensorflow:${Versions.kotlinDl}"
 
-    const val sqlDelightJvm = "com.squareup.sqldelight:sqlite-driver:${Versions.sqlDelight}"
+    const val sqlDelightJvm = "app.cash.sqldelight:sqlite-driver:${Versions.sqlDelight}"
 }

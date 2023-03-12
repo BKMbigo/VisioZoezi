@@ -12,7 +12,7 @@ class ExerciseDbApi(
 ) {
 
     suspend fun getAllExercises(): HttpResponse {
-        return client.get("${HOST_URL}${ApiRoutes.ALL_EXERCISES}") {
+        return client.get("$HOST_URL${ApiRoutes.ALL_EXERCISES}") {
             url {
                 parameters.append("api_key", exerciseDbApiKey)
             }
@@ -21,7 +21,7 @@ class ExerciseDbApi(
     }
 
     suspend fun getAllEquipment(): HttpResponse {
-        return client.get("${HOST_URL}${ApiRoutes.ALL_EQUIPMENT}") {
+        return client.get("$HOST_URL${ApiRoutes.ALL_EQUIPMENT}") {
             url {
                 parameters.append("api_key", exerciseDbApiKey)
             }
@@ -30,7 +30,7 @@ class ExerciseDbApi(
     }
 
     suspend fun getAllBodyPart(): HttpResponse {
-        return client.get("${HOST_URL}${ApiRoutes.ALL_BODY_PARTS}") {
+        return client.get("$HOST_URL${ApiRoutes.ALL_BODY_PARTS}") {
             url {
                 parameters.append("api_key", exerciseDbApiKey)
             }
@@ -39,7 +39,7 @@ class ExerciseDbApi(
     }
 
     suspend fun getAllTargetMuscles(): HttpResponse {
-        return client.get("${HOST_URL}${ApiRoutes.ALL_TARGET_MUSCLES}") {
+        return client.get("$HOST_URL${ApiRoutes.ALL_TARGET_MUSCLES}") {
             url {
                 parameters.append("api_key", exerciseDbApiKey)
             }

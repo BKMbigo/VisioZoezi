@@ -28,7 +28,7 @@ import com.github.bkmbigo.visiozoezi.common.data.settings.SettingsKeys
 import com.github.bkmbigo.visiozoezi.common.data.settings.settings
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.ExerciseRepository
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.StatsRepository
-import com.github.bkmbigo.visiozoezi.common.presentation.screens.home.HomeScreen
+import com.github.bkmbigo.visiozoezi.common.presentation.screens.home.HomeScreenNavigator
 import com.github.bkmbigo.visiozoezi.common.presentation.theme.VisioZoeziTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,11 +37,6 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-        lifecycleScope.launch {
-
-        }
 
         setContent {
             var exerciseRepository by remember { mutableStateOf<ExerciseRepository?>(null) }
@@ -52,10 +47,10 @@ class MainActivity : AppCompatActivity() {
                     DatabaseDriverFactory(this@MainActivity)
                 )
                 exerciseRepository = ExerciseRepositoryImpl(
-                    DatabaseExerciseRepositoryImpl(db),
+                    DatabaseExerciseRepositoryImpl(db, Dispatchers.IO),
                     ioDispatcher = Dispatchers.IO
                 )
-                statsRepository = StatsRepositoryImpl(db)
+                statsRepository = StatsRepositoryImpl(db, Dispatchers.IO)
             }
 
             VisioZoeziTheme(
@@ -67,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (exerciseRepository != null && statsRepository != null) {
                     Navigator(
-                        screen = HomeScreen(exerciseRepository!!, statsRepository!!),
+                        screen = HomeScreenNavigator(exerciseRepository!!, statsRepository!!),
                     ) {
                         SlideTransition(it)
                     }

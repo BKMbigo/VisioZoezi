@@ -27,7 +27,6 @@ import com.github.bkmbigo.visiozoezi.common.domain.models.ExerciseStat
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.utils.getDuration
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +145,7 @@ fun RowStat(
             style = MaterialTheme.typography.titleSmall
         )
         Text(
-            text = duration.toString()
+            text = "duration.toString()"
         )
     }
 }

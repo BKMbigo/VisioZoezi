@@ -18,5 +18,5 @@ pluginManagement {
 
 rootProject.name = "VisioZoezi"
 
-include(":android", ":desktop", ":common")
+include(":android", ":desktop", ":common", ":javascript")
 include(":training")

@@ -1,8 +1,9 @@
 package com.github.bkmbigo.visiozoezi.common.data.network.repositories
 
-import com.github.bkmbigo.visiozoezi.common.data.network.api.ExerciseDbApi
 import com.github.bkmbigo.visiozoezi.common.data.network.dto.ExerciseDto
+import com.github.bkmbigo.visiozoezi.common.data.network.api.ExerciseDbApi
 import com.github.bkmbigo.visiozoezi.common.data.network.mappers.toExercise
+import com.github.bkmbigo.visiozoezi.common.data.network.utils.logLogger
 import com.github.bkmbigo.visiozoezi.common.data.network.utils.safeApiCall
 import com.github.bkmbigo.visiozoezi.common.data.network.utils.toElements
 import com.github.bkmbigo.visiozoezi.common.data.repositories.NetworkExerciseRepository
@@ -21,7 +22,8 @@ class NetworkExerciseRepositoryImpl(
         targetMuscleList: List<TargetMuscle>
     ): List<Exercise> =
         safeApiCall {
-            exerciseDbApi.getAllExercises().body<List<ExerciseDto>>()
+            exerciseDbApi.getAllExercises()
+                .body<List<ExerciseDto>>()
                 .map { it.toExercise(equipmentList, bodyPartList, targetMuscleList) }
         }.toElements()
 

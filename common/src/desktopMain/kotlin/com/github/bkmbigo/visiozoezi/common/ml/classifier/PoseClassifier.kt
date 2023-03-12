@@ -1,5 +1,7 @@
 package com.github.bkmbigo.visiozoezi.common.ml.classifier
 
+import com.github.bkmbigo.visiozoezi.common.ml.classifier.PoseClassificationResult
+import com.github.bkmbigo.visiozoezi.common.ml.classifier.PoseClassifier
 import com.github.bkmbigo.visiozoezi.common.ml.classifier.models.PoseClassificationModel
 import com.github.bkmbigo.visiozoezi.common.ml.pose.models.PoseResult
 import kotlinx.datetime.Clock

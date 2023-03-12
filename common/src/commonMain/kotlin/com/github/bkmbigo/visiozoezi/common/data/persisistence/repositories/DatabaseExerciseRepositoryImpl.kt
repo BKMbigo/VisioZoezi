@@ -1,5 +1,7 @@
 package com.github.bkmbigo.visiozoezi.common.data.persisistence.repositories
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.mappers.toBodyPart
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.mappers.toBodyPartDb
 import com.github.bkmbigo.visiozoezi.common.data.persisistence.mappers.toEquipment
@@ -14,15 +16,16 @@ import com.github.bkmbigo.visiozoezi.common.domain.models.BodyPart
 import com.github.bkmbigo.visiozoezi.common.domain.models.Equipment
 import com.github.bkmbigo.visiozoezi.common.domain.models.Exercise
 import com.github.bkmbigo.visiozoezi.common.domain.models.TargetMuscle
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DatabaseExerciseRepositoryImpl(
-    private val database: VisioZoeziDatabase
+    private val database: VisioZoeziDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : DatabaseExerciseRepository {
-    override fun databaseIsFilled(): Boolean {
+    override suspend fun databaseIsFilled(): Boolean {
         return database.exerciseQueries.selectAll().executeAsList().isNotEmpty() &&
                 database.equipmentQueries.selectAll().executeAsList().isNotEmpty() &&
                 database.body_partQueries.selectAll().executeAsList().isNotEmpty() &&
@@ -30,7 +33,7 @@ class DatabaseExerciseRepositoryImpl(
     }
 
     override suspend fun getAllExercises(): Flow<List<Exercise>> {
-        return database.exerciseQueries.selectAll().asFlow().mapToList()
+        return database.exerciseQueries.selectAll().asFlow().mapToList(ioDispatcher)
             .map { exerciseList ->
 
                 val equipmentMap = database.equipmentQueries.selectAll().executeAsList()
@@ -80,17 +83,17 @@ class DatabaseExerciseRepositoryImpl(
     }
 
     override suspend fun getAllEquipment(): Flow<List<Equipment>> {
-        return database.equipmentQueries.selectAll().asFlow().mapToList()
+        return database.equipmentQueries.selectAll().asFlow().mapToList(ioDispatcher)
             .map { it.map { equipment -> equipment.toEquipment() } }
     }
 
     override suspend fun getAllBodyParts(): Flow<List<BodyPart>> {
-        return database.body_partQueries.selectAll().asFlow().mapToList()
+        return database.body_partQueries.selectAll().asFlow().mapToList(ioDispatcher)
             .map { it.map { bodyPart -> bodyPart.toBodyPart() } }
     }
 
     override suspend fun getAllTargetMuscles(): Flow<List<TargetMuscle>> {
-        return database.target_muscleQueries.selectAll().asFlow().mapToList()
+        return database.target_muscleQueries.selectAll().asFlow().mapToList(ioDispatcher)
             .map {
                 it.map { targetMuscle ->
                     targetMuscle.toTargetMuscle()

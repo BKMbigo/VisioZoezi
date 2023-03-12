@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface DatabaseExerciseRepository {
 
-    fun databaseIsFilled(): Boolean
+    suspend fun databaseIsFilled(): Boolean
 
     suspend fun getAllExercises(): Flow<List<Exercise>>
 

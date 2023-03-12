@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +33,7 @@ import com.github.bkmbigo.visiozoezi.common.presentation.components.stats.Weekly
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UserScreen(
+class UserScreenNavigator(
     private val statsRepository: StatsRepository
 ) : Screen {
 
@@ -49,59 +48,18 @@ class UserScreen(
         val weeklyStats = screenModel.currentWeeklyStats.collectAsState()
         val monthlyStats = screenModel.currentMonthlyStats.collectAsState()
 
-        // State Variables
-        val showClearStatsDialogState = remember { mutableStateOf(false) }
-
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text(text = "Exercise") },
-                    navigationIcon = {
-                        IconButton(onClick = { navigator?.pop() }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { showClearStatsDialogState.value = true }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.DeleteForever,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                )
-            }
-        ) {
-            Box(modifier = Modifier.padding(top = it.calculateTopPadding()).padding(4.dp)) {
-                if (showClearStatsDialogState.value) {
-                    ClearStatsDialog(
-                        dialogVisibilityState = showClearStatsDialogState,
-                        onConfirm = {
-                            coroutineScope.launch(Dispatchers.IO) {
-                                statsRepository.deleteAllStats()
-                            }
-                        }
-                    )
+        UserScreen(
+            weeklyStats = weeklyStats,
+            monthlyStats = monthlyStats,
+            modifier = Modifier.fillMaxSize(),
+            clearStats = {
+                coroutineScope.launch {
+                    statsRepository.deleteAllStats()
                 }
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    WeeklyStats(
-                        statsState = weeklyStats,
-                        modifier = Modifier.fillMaxWidth().padding(4.dp)
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    MonthlyStats(
-                        statsState = monthlyStats,
-                        modifier = Modifier.fillMaxWidth().padding(4.dp)
-                    )
-                }
+            },
+            navigateBack = {
+                navigator?.pop()
             }
-        }
+        )
     }
 }

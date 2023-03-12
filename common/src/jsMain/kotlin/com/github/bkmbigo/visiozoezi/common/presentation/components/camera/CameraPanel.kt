@@ -10,5 +10,4 @@ actual fun CameraPanel(
     classificationResultsState: MutableState<PoseClassificationResult>,
     modifier: Modifier
 ) {
-
 }

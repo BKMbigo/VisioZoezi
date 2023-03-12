@@ -1,11 +1,15 @@
 package com.github.bkmbigo.visiozoezi.common.data.persisistence
 
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.drivers.sqljs.initSqlDriver
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlSchema
+import app.cash.sqldelight.driver.sqljs.initSqlDriver
 import kotlinx.coroutines.await
 
 actual class DatabaseDriverFactory {
-    actual suspend fun createDriver(schema: SqlDriver.Schema): SqlDriver {
-        return initSqlDriver(schema).await()
+    actual suspend fun createDriver(schema: SqlSchema): SqlDriver {
+        console.log("Creating Driver....")
+        val driver = initSqlDriver(schema).await()
+        console.log("Driver created")
+        return driver
     }
 }

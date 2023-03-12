@@ -48,9 +48,11 @@ suspend fun getError(responseContent: ByteReadChannel): ApiError {
 fun <T> NetworkResult<List<T>>.toElements(): List<T>{
     return when(this){
         is NetworkResult.Success -> {
+            logLogger("Network Success")
             this.data
         }
         is NetworkResult.Error -> {
+            logLogger("Error Encountered: Code: ${this.errorCode}, Message: ${this.errorMessage}")
             emptyList() // Error handling to be added later
         }
     }

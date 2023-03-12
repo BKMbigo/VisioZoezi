@@ -1,11 +1,13 @@
 package com.github.bkmbigo.visiozoezi.common.data.persisistence.repositories
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.github.bkmbigo.visiozoezi.common.data.persistence.Exercise_stat
 import com.github.bkmbigo.visiozoezi.common.data.persistence.VisioZoeziDatabase
 import com.github.bkmbigo.visiozoezi.common.domain.models.ExerciseStat
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.StatsRepository
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Instant
@@ -13,7 +15,8 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class StatsRepositoryImpl(
-    private val database: VisioZoeziDatabase
+    private val database: VisioZoeziDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : StatsRepository {
     override suspend fun addStat(exerciseStat: ExerciseStat): Long {
         when (exerciseStat) {
@@ -67,7 +70,7 @@ class StatsRepositoryImpl(
     }
 
     override suspend fun getAllStats(): Flow<List<ExerciseStat>> {
-        return database.exercise_statQueries.selectAll().asFlow().mapToList()
+        return database.exercise_statQueries.selectAll().asFlow().mapToList(ioDispatcher)
             .map { it.map { stat -> stat.toExerciseStat() } }
     }
 

@@ -5,9 +5,9 @@ object Common {
     const val kotlinxSerialization =
         "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kotlinxSerialization}"
 
-    const val sqlDelight = "com.squareup.sqldelight:runtime:${Versions.sqlDelight}"
+    const val sqlDelight = "app.cash.sqldelight:runtime:${Versions.sqlDelight}"
     const val sqlDelightCoroutine =
-        "com.squareup.sqldelight:coroutines-extensions:${Versions.sqlDelight}"
+        "app.cash.sqldelight:coroutines-extensions:${Versions.sqlDelight}"
 
 
     const val kotlinxDateTime = "org.jetbrains.kotlinx:kotlinx-datetime:${Versions.kotlinxDateTime}"

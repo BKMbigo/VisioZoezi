@@ -1,3 +1,6 @@
+import kotlin.Int;
+import kotlin.Boolean;
+
 CREATE TABLE exercise_stat(
     id INTEGER PRIMARY KEY NOT NULL,
     exercise_id INTEGER NOT NULL,

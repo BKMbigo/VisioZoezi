@@ -34,7 +34,7 @@ object Android {
         const val tfLite = "org.tensorflow:tensorflow-lite:${Versions.tfLite}"
         const val tfLiteSupport = "org.tensorflow:tensorflow-lite-support:${Versions.tfLiteSupport}"
 
-        const val sqlDelightAndroid = "com.squareup.sqldelight:android-driver:${Versions.sqlDelight}"
+        const val sqlDelightAndroid = "app.cash.sqldelight:android-driver:${Versions.sqlDelight}"
 
         const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
 

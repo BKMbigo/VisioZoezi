@@ -59,9 +59,14 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
 
+                implementation(Javascript.routingCompose)
+
                 implementation(Javascript.ktorClientJS)
 
                 implementation(Javascript.sqlDelightJs)
+
+                implementation(npm("sql.js", "1.6.2"))
+                implementation(devNpm("copy-webpack-plugin", "9.1.0"))
             }
         }
         val jvmMain by creating {
@@ -109,7 +114,7 @@ kotlin {
                 api(Android.AndroidDependencies.tfLiteSupport)
             }
         }
-        val androidTest by getting {
+        val androidUnitTest by getting {
             dependencies {
                 implementation("junit:junit:4.13.2")
                 implementation(Desktop.sqlDelightJvm)
@@ -159,7 +164,10 @@ android {
 }
 
 sqldelight {
-    this.database("VisioZoeziDatabase"){
-        this.packageName = "com.github.bkmbigo.visiozoezi.common.data.persistence"
+    this.databases {
+        create("VisioZoeziDatabase") {
+            packageName.set("com.github.bkmbigo.visiozoezi.common.data.persistence")
+            generateAsync.set(true)
+        }
     }
 }

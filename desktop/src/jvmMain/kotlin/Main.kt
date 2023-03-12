@@ -18,9 +18,10 @@ import com.github.bkmbigo.visiozoezi.common.data.settings.SettingsKeys
 import com.github.bkmbigo.visiozoezi.common.data.settings.settings
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.ExerciseRepository
 import com.github.bkmbigo.visiozoezi.common.domain.repositories.StatsRepository
-import com.github.bkmbigo.visiozoezi.common.presentation.screens.home.HomeScreen
+import com.github.bkmbigo.visiozoezi.common.presentation.screens.home.HomeScreenNavigator
 import com.github.bkmbigo.visiozoezi.common.presentation.theme.VisioZoeziTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -92,10 +93,11 @@ fun main() = application {
         val db = createDatabase(DatabaseDriverFactory())
         database = db
         exerciseRepository = ExerciseRepositoryImpl(
-            databaseExerciseRepository = DatabaseExerciseRepositoryImpl(db),
+            databaseExerciseRepository = DatabaseExerciseRepositoryImpl(db, Dispatchers.IO),
             //networkExerciseRepository = fakeNetworkExerciseRepository
+            ioDispatcher = Dispatchers.IO
         )
-        statsRepository = StatsRepositoryImpl(db)
+        statsRepository = StatsRepositoryImpl(db, Dispatchers.IO)
     }
 
 
@@ -113,7 +115,7 @@ fun main() = application {
             exerciseRepository?.let { exRep ->
                 statsRepository?.let { statRep ->
                     Navigator(
-                        HomeScreen(exRep, statRep)
+                        HomeScreenNavigator(exRep, statRep)
                     )
                 }
             } ?: Column(
